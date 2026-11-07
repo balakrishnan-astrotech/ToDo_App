@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>ToDo – Settings</title>
+  <link rel="icon" href="images/ToDo_logo.png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+  <div class="side-nav">
+    <nav class="menu">
+    <span></span>
+    <span></span>
+    <span></span>
+    </nav>
+    <div class="side-menu">
+      <div class="menu-list">
+        <ul>
+          <li><i class="fa-solid fa-home"></i><a href="index.html">Home</a></li>
+          <li><i class="fa-solid fa-tasks"></i><a href="task-manager.html">Task Manager</a></li>
+          <li><i class="fa-solid fa-pen-to-square"></i><a href="task-script.html">Task Script</a></li>
+          <li><i class="fa-solid fa-gear"></i><a href="settings.html">Settings</a></li>
+          <li><i class="fa-solid fa-info-circle"></i><a href="about.html">About</a></li>
+          <button id="logout">Logout</button>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <!-- HEADER -->
+
+  <header>
+    <h2>Settings</h2>
+    <p>Personalise your task manager</p>
+  </header>
+
+
+  <main class="settings-main">
+
+
+    <!-- GENERAL SETTINGS -->
+
+    <section class="settings-section">
+
+      <div class="section-heading">
+        <h3>General Settings</h3>
+        <p>Manage your application preferences.</p>
+      </div>
+
+      <div class="setting-card">
+
+        <div class="setting-info">
+          <h4>Theme</h4>
+          <p>Choose your preferred application appearance.</p>
+        </div>
+
+        <select id="theme">
+          <option value="light" selected>Light</option>
+          <option value="dark">Dark</option>
+          <option value="system">System Default</option>
+        </select>
+
+      </div>
+
+
+      <div class="setting-card">
+
+        <div class="setting-info">
+          <h4>Animations</h4>
+          <p>Enable or disable interface animations.</p>
+        </div>
+
+        <label class="switch">
+          <input type="checkbox" id="animations" checked>
+          <span class="slider"></span>
+        </label>
+
+      </div>
+
+
+      <div class="setting-card">
+
+        <div class="setting-info">
+          <h4>Default Task Sorting</h4>
+          <p>Choose how your tasks are arranged.</p>
+        </div>
+
+        <select id="sorting">
+          <option value="date">Date</option>
+          <option value="priority">Priority</option>
+          <option value="status">Status</option>
+          <option value="alphabetical">Alphabetical</option>
+        </select>
+
+      </div>
+
+    </section>
+
+
+    <!-- TASK MANAGEMENT -->
+
+    <section class="settings-section">
+
+      <div class="section-heading">
+        <h3>Task Management</h3>
+        <p>Control how tasks are managed.</p>
+      </div>
+
+      <div class="setting-card">
+
+        <div class="setting-info">
+          <h4>Allow Task Creation</h4>
+          <p>Allow new tasks to be created.</p>
+        </div>
+
+        <label class="switch">
+          <input type="checkbox" id="allow-create" checked>
+          <span class="slider"></span>
+        </label>
+
+      </div>
+
+
+      <div class="setting-card">
+
+        <div class="setting-info">
+          <h4>Allow Task Editing</h4>
+          <p>Allow existing tasks to be modified.</p>
+        </div>
+
+        <label class="switch">
+          <input type="checkbox" id="allow-edit" checked>
+          <span class="slider"></span>
+        </label>
+
+      </div>
+
+
+      <div class="setting-card">
+
+        <div class="setting-info">
+          <h4>Allow Task Deletion</h4>
+          <p>Allow tasks to be permanently deleted.</p>
+        </div>
+
+        <label class="switch">
+          <input type="checkbox" id="allow-delete" checked>
+          <span class="slider"></span>
+        </label>
+
+      </div>
+
+    </section>
+
+
+    <!-- SECURITY AND PRIVACY -->
+
+    <section class="settings-section">
+
+      <div class="section-heading">
+        <h3>Security & Privacy</h3>
+        <p>Manage application security and privacy.</p>
+      </div>
+
+      <div class="setting-card">
+
+        <div class="setting-info">
+          <h4>Password Management</h4>
+          <p>Manage your account password.</p>
+        </div>
+
+        <button type="button" class="action-btn" id="change-password">
+          Change Password
+        </button>
+
+      </div>
+
+
+      <div class="setting-card">
+
+        <div class="setting-info">
+          <h4>Task Encryption</h4>
+          <p>Protect private task information.</p>
+        </div>
+
+        <label class="switch">
+          <input type="checkbox" id="task-encryption">
+          <span class="slider"></span>
+        </label>
+
+      </div>
+
+
+      <div class="setting-card">
+
+        <div class="setting-info">
+          <h4>Encryption Password</h4>
+          <p>Manage your separate task encryption password.</p>
+        </div>
+
+        <button type="button" class="action-btn" id="encryption-password">
+          Manage Password
+        </button>
+
+      </div>
+
+    </section>
+
+
+    <!-- APPEARANCE AND ACCESSIBILITY -->
+
+    <section class="settings-section">
+
+      <div class="section-heading">
+        <h3>Appearance & Accessibility</h3>
+        <p>Customise readability and visual appearance.</p>
+      </div>
+
+      <div class="setting-card">
+
+        <div class="setting-info">
+          <h4>Text Size</h4>
+          <p>Adjust the application text size.</p>
+        </div>
+
+        <select id="text-size">
+          <option value="small">Small</option>
+          <option value="medium" selected>Medium</option>
+          <option value="large">Large</option>
+          <option value="extra-large">Extra Large</option>
+        </select>
+
+      </div>
+
+
+      <div class="setting-card">
+
+        <div class="setting-info">
+          <h4>Text Colour</h4>
+          <p>Choose your preferred text colour.</p>
+        </div>
+
+        <input type="color" id="text-color" value="#222222">
+
+      </div>
+
+
+      <div class="setting-card">
+
+        <div class="setting-info">
+          <h4>Font Family</h4>
+          <p>Choose a font style.</p>
+        </div>
+
+        <select id="font-family">
+          <option value="system" selected>System Default</option>
+          <option value="arial">Arial</option>
+          <option value="georgia">Georgia</option>
+          <option value="verdana">Verdana</option>
+        </select>
+
+      </div>
+
+
+      <div class="setting-card">
+
+        <div class="setting-info">
+          <h4>High Contrast Mode</h4>
+          <p>Improve visibility and text contrast.</p>
+        </div>
+
+        <label class="switch">
+          <input type="checkbox" id="high-contrast">
+          <span class="slider"></span>
+        </label>
+
+      </div>
+
+    </section>
+
+
+    <!-- DATA MANAGEMENT -->
+
+    <section class="settings-section">
+
+      <div class="section-heading">
+        <h3>Data Management</h3>
+        <p>Manage your stored task information.</p>
+      </div>
+
+      <div class="setting-card">
+
+        <div class="setting-info">
+          <h4>Export Tasks</h4>
+          <p>Download your tasks as a JSON file.</p>
+        </div>
+
+        <button type="button" class="action-btn" id="export-tasks">
+          Export
+        </button>
+
+      </div>
+
+
+      <div class="setting-card">
+
+        <div class="setting-info">
+          <h4>Import Tasks</h4>
+          <p>Restore tasks from a JSON file.</p>
+        </div>
+
+        <button type="button" class="action-btn" id="import-tasks">
+          Import
+        </button>
+
+        <input type="file" id="import-file" accept=".json,application/json" hidden>
+
+      </div>
+
+
+      <div class="setting-card">
+
+        <div class="setting-info">
+          <h4>Clear Completed Tasks</h4>
+          <p>Remove all completed tasks.</p>
+        </div>
+
+        <button type="button" class="danger-btn" id="clear-completed">
+          Clear
+        </button>
+
+      </div>
+
+
+      <div class="setting-card">
+
+        <div class="setting-info">
+          <h4>Delete All Tasks</h4>
+          <p>Permanently remove all stored tasks.</p>
+        </div>
+
+        <button type="button" class="danger-btn" id="delete-all">
+          Delete All
+        </button>
+
+      </div>
+
+    </section>
+
+
+    <!-- SAVE SETTINGS -->
+
+    <div class="settings-footer">
+
+      <button type="button" class="reset-btn" id="reset-settings">
+        Reset Settings
+      </button>
+
+      <button type="button" class="save-btn" id="save-settings">
+        Save Changes
+      </button>
+
+    </div>
+
+  </main>
+
+
+  <!-- JAVASCRIPT -->
+<script type="module" src="js/auth.js"></script>
+  <script type="module" src="js/main.js"></script>
+
+</body>
+
+</html>
