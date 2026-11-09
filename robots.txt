@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://todo-app-bk2026.web.app/sitemap.xml
