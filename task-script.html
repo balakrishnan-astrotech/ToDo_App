@@ -13,9 +13,9 @@
 <body>
   <div class="side-nav">
     <nav class="menu">
-    <span></span>
-    <span></span>
-    <span></span>
+      <span></span>
+      <span></span>
+      <span></span>
     </nav>
     <div class="side-menu">
       <div class="menu-list">
@@ -38,10 +38,99 @@
   </header>
 
 
-  <main class="about-main"></main>
+  <main class="script-main">
+
+    <div class="writing-box">
+      <div class="script-head">
+        <h2>Task Script Pad</h2>
+        <small>Write a detailed blueprint for your task</small>
+      </div>
+      <div class="script-box-outer">
+        <div class="scripting-box">
+          <div>
+            <div class="script-body">
+              <form id="script-form">
+                <div id="cancel-script" title="Cancel">
+                  <i class="fa-solid fa-xmark"></i>
+                </div>
+                <div>
+                  <label for="script-name">Script Name<sup style="color: red; font-weight: 400;">*</sup></label>
+                  <input id="script-name" type="text" placeholder="Give a name for your script." required>
+                </div>
+
+                <div>
+                  <label for="task-name">For what task?<sup style="color: red; font-weight: 400;">*</sup></label>
+                  <input id="filter-input" type="text" placeholder="Filter by task name...">
+                  <select id="filter-category">
+                    <option value="task">Task</option>
+                    <option value="priority">Priority</option>
+                    <option value="date">Date</option>
+                  </select>
+
+                  <div class="task-choice-container">
+                    <div class="tasks">
+                      <div id="desired-task">
+                      </div>
+                    </div>
+                  </div>
+                </div>
 
 
-<script type="module" src="js/auth.js"></script>
+                <div>
+                  <label for="start-date">Date of starting<sup style="color: red; font-weight: 400;">*</sup></label>
+                  <input id="start-date" type="date" placeholder="Date of starting" required>
+                </div>
+
+                <div>
+                  <label for="end-date">End Date (if you've planed)</label>
+                  <input id="end-date" type="date" placeholder="Date of completion">
+                </div>
+
+                <div>
+                  <label for="goal">Goal / Target<sup style="color: red; font-weight: 400;">*</sup></label>
+                  <input id="goal" type="text" placeholder="What's your target" required>
+                </div>
+
+                <div>
+                  <label for="script">Script</label>
+                  <textarea id="script" placeholder="Write a detailed script here"></textarea>
+                </div>
+
+                <div class="upload-section">
+                  <p>Or</p>
+                  <p>Upload a txt/docx/pdf file instead that you already have</p>
+
+                  <button type="button" id="txtbtn">Upload File</button>
+
+<input
+    type="file"
+    id="script-file"
+    accept=".txt,.docx,.pdf"
+    hidden
+>
+
+<small id="file-name"></small>
+
+                  <button type="submit" id="save-script"
+                    style="background-color: hwb(173 0% 16%); text-shadow: 0px 0px 5px black;">
+                    Save Script
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="add-script" class="new-script" title="Write new script for a task">
+      <i id="file-icon" class="fa-regular fa-file"></i>
+      <i id="plus-icon" class="fa-regular fa-plus"></i>
+    </div>
+  </main>
+
+
+  <script type="module" src="js/auth.js"></script>
 
   <script type="module" src="js/main.js"></script>
 

@@ -2,7 +2,7 @@
 // FIREBASE IMPORTS
 // ============================================
 
-import { auth, db } from "./firebase.js";
+import { auth, db, storage } from "./firebase.js";
 
 import {
   onAuthStateChanged,
@@ -19,6 +19,13 @@ import {
   writeBatch
 } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-firestore.js";
 
+
+import {
+  ref,
+  uploadBytes,
+  getDownloadURL,
+  deleteObject
+} from "https://www.gstatic.com/firebasejs/13.2.0/firebase-storage.js";
 
 // Get the currently logged-in user's Tasks collection
 function getUserTasksCollection() {
@@ -781,7 +788,7 @@ function createTaskCard(task) {
 
   const date = createDetail(
     "Date",
-    data.Date
+    formatDate(data.Date)
   );
 
   const priority = createDetail(
@@ -1778,6 +1785,622 @@ if (filterCategory && filterInput) {
   });
 
 }
+
+
+
+// ============================================
+// TASK SCRIPT SYSTEM
+// ============================================
+
+const addScript = document.getElementById("add-script")
+const writingBox = document.querySelector(".writing-box")
+const cancelScript = document.getElementById("cancel-script")
+
+
+addScript.addEventListener("click", ()=>{
+  writingBox.style.display = "flex";
+})
+
+cancelScript.addEventListener("click", ()=>{
+  writingBox.style.display = "none";
+})
+
+
+
+const scriptForm = document.getElementById("script-form");
+
+if (scriptForm) {
+
+  // ------------------------------------------
+  // ELEMENT REFERENCES
+  // ------------------------------------------
+
+  const scriptName = document.getElementById("script-name");
+  const startDate = document.getElementById("start-date");
+  const endDate = document.getElementById("end-date");
+  const goal = document.getElementById("goal");
+  const scriptContent = document.getElementById("script");
+
+  const d_taskList = document.getElementById("desired-task");
+
+  const fileInput = document.getElementById("script-file");
+  const uploadButton = document.getElementById("txtbtn");
+  const fileNameDisplay = document.getElementById("file-name");
+
+  const saveButton = document.getElementById("save-script");
+  const cancelButton = document.getElementById("cancel-script");
+  const addScriptButton = document.getElementById("add-script");
+
+  const writingBox = document.querySelector(".writing-box");
+
+
+  // ------------------------------------------
+  // STATE VARIABLES
+  // ------------------------------------------
+
+  let availableTasks = [];
+  let selectedTask = null;
+  let selectedFile = null;
+
+
+  // ------------------------------------------
+  // FIRESTORE COLLECTION
+  // ------------------------------------------
+
+  function getUserScriptsCollection() {
+
+    const user = auth.currentUser;
+
+    if (!user) {
+      throw new Error("User is not authenticated.");
+    }
+
+    return collection(
+      db,
+      "Users",
+      user.uid,
+      "Scripts"
+    );
+
+  }
+
+
+  // ------------------------------------------
+  // LOAD USER TASKS
+  // ------------------------------------------
+
+  async function loadScriptTasks() {
+
+    d_taskList.innerHTML = "<p>Loading tasks...</p>";
+
+    try {
+
+      const snapshot = await getDocs(getUserTasksCollection());
+
+      availableTasks = snapshot.docs.map((document) => {
+
+        return {
+          id: document.id,
+          ...document.data()
+        };
+
+      });
+
+      if (availableTasks.length === 0) {
+
+        d_taskList.innerHTML = "<p>No tasks available. Create a task first.</p>";
+        return;
+
+      }
+
+      displayScriptTasks(availableTasks);
+
+    } catch (error) {
+
+      console.error("Task loading error:", error);
+
+      d_taskList.innerHTML = "<p>Unable to load tasks.</p>";
+
+    }
+
+  }
+
+
+  // ------------------------------------------
+  // DISPLAY TASKS
+  // ------------------------------------------
+
+  function displayScriptTasks(tasks) {
+
+    d_taskList.innerHTML = "";
+
+    if (tasks.length === 0) {
+
+      d_taskList.innerHTML = "<p>No matching tasks found.</p>";
+      return;
+
+    }
+
+    tasks.forEach((task) => {
+
+      const taskCard = document.createElement("div");
+
+      taskCard.className = "task-card";
+      taskCard.dataset.taskId = task.id;
+
+      taskCard.innerHTML = `<div class="task-for-script">
+        <h3>${escapeScriptHTML(task.Task || "Untitled Task")}</h3>
+
+        <p><b>Priority: </b>${escapeScriptHTML(task.Priority || "Not specified")}</p>
+
+        <p><b>Date: </b>${escapeScriptHTML(formatDate(task.Date) || "Not specified")}</p>
+      </div>
+      `;
+
+      if (selectedTask && selectedTask.id === task.id) {
+        taskCard.classList.add("selected");
+      }
+
+      d_taskList.appendChild(taskCard);
+
+    });
+
+  }
+
+
+  // ------------------------------------------
+  // SAFE HTML TEXT
+  // ------------------------------------------
+
+  function escapeScriptHTML(value) {
+
+    return String(value).replace(/[&<>"']/g, (character) => {
+
+      const entities = {
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+      };
+
+      return entities[character];
+
+    });
+
+  }
+
+
+  // ------------------------------------------
+  // SELECT A TASK
+  // ------------------------------------------
+
+  d_taskList.addEventListener("click", (event) => {
+
+    const taskCard = event.target.closest(".task-card");
+
+    if (!taskCard) return;
+
+    const taskId = taskCard.dataset.taskId;
+
+    selectedTask = availableTasks.find(
+        (task) => task.id === taskId
+    );
+
+    // Refresh task cards to show selection
+    filterScriptTasks();
+  filterInput.placeholder = `'${taskCard.querySelector("h3").textContent}' task is selected`;
+});
+
+
+  // ------------------------------------------
+  // FILTER TASKS
+  // ------------------------------------------
+
+  function filterScriptTasks() {
+
+    const searchText = filterInput.value.trim().toLowerCase();
+    const category = filterCategory.value;
+
+    const filteredTasks = availableTasks.filter((task) => {
+
+      if (!searchText) return true;
+
+      if (category === "priority") {
+
+        return String(task.Priority || "")
+          .toLowerCase()
+          .includes(searchText);
+
+      }
+
+      if (category === "date") {
+
+        return formatDate(task.Date)
+  .toLowerCase()
+  .includes(searchText);
+      }
+
+      return String(task.Task || "")
+        .toLowerCase()
+        .includes(searchText);
+
+    });
+
+    displayScriptTasks(filteredTasks);
+
+  }
+
+
+  filterInput.addEventListener("input", filterScriptTasks);
+
+  filterCategory.addEventListener("change", filterScriptTasks);
+
+
+  // ------------------------------------------
+  // FILE SELECTION
+  // ------------------------------------------
+
+  uploadButton.addEventListener("click", () => {
+
+    fileInput.click();
+
+  });
+
+
+  fileInput.addEventListener("change", () => {
+
+    const file = fileInput.files[0];
+
+    if (!file) return;
+
+    const allowedExtensions = ["txt", "docx", "pdf"];
+
+    const extension = file.name.split(".").pop().toLowerCase();
+
+    if (!allowedExtensions.includes(extension)) {
+
+      alert("Only TXT, DOCX and PDF files are allowed.");
+
+      fileInput.value = "";
+      selectedFile = null;
+      fileNameDisplay.textContent = "";
+
+      return;
+
+    }
+
+    // Maximum file size: 10 MB
+
+    if (file.size > 10 * 1024 * 1024) {
+
+      alert("File size must be below 10 MB.");
+
+      fileInput.value = "";
+      selectedFile = null;
+      fileNameDisplay.textContent = "";
+
+      return;
+
+    }
+
+    selectedFile = file;
+
+scriptContent.value = "";
+
+fileNameDisplay.textContent = "Selected: " + file.name;
+
+// Prevent selecting another file
+uploadButton.disabled = true;
+    
+  });
+
+
+  // ------------------------------------------
+  // CLEAR SELECTED FILE WHEN TYPING
+  // ------------------------------------------
+
+  scriptContent.addEventListener("input", () => {
+
+    if (scriptContent.value.trim() && selectedFile) {
+
+      selectedFile = null;
+      fileInput.value = "";
+      fileNameDisplay.textContent = "";
+
+      uploadButton.disabled = false;
+
+    }
+
+  });
+
+
+  // ------------------------------------------
+  // SAVE SCRIPT
+  // ------------------------------------------
+
+  scriptForm.addEventListener("submit", async (event) => {
+
+    event.preventDefault();
+
+    const user = auth.currentUser;
+
+    if (!user) {
+
+      alert("Please log in first.");
+      return;
+
+    }
+
+    // Validate required fields
+
+    if (!scriptName.value.trim()) {
+      alert("Enter a script name.");
+      return;
+    }
+
+    if (!selectedTask) {
+      alert("Select a task.");
+      return;
+    }
+
+    if (!startDate.value) {
+      alert("Select a starting date.");
+      return;
+    }
+
+    if (!goal.value.trim()) {
+      alert("Enter your goal or target.");
+      return;
+    }
+
+    if (
+      endDate.value &&
+      endDate.value < startDate.value
+    ) {
+
+      alert("End date cannot be earlier than starting date.");
+      return;
+
+    }
+
+    const content = scriptContent.value.trim();
+
+    if (!content && !selectedFile) {
+
+      alert("Write your script or upload a file.");
+      return;
+
+    }
+
+    saveButton.disabled = true;
+    uploadButton.disabled = true;
+    saveButton.textContent = "Saving...";
+
+    let uploadedFilePath = null;
+
+    try {
+
+      let fileData = {
+        FileName: null,
+        FileType: null,
+        FilePath: null,
+        FileURL: null
+      };
+
+
+      // --------------------------------------
+      // UPLOAD FILE TO FIREBASE STORAGE
+      // --------------------------------------
+
+      if (selectedFile) {
+
+        const safeFileName = selectedFile.name.replace(
+          /[^a-zA-Z0-9._-]/g,
+          "_"
+        );
+
+        const uniqueFileName =
+          Date.now() + "_" + safeFileName;
+
+        uploadedFilePath =
+          `Users/${user.uid}/Scripts/${uniqueFileName}`;
+
+        const fileReference = ref(
+          storage,
+          uploadedFilePath
+        );
+
+        uploadButton.textContent = "Uploading...";
+uploadButton.disabled = true;
+
+await uploadBytes(fileReference, selectedFile);
+
+uploadButton.textContent = "Uploaded";
+
+        const downloadURL = await getDownloadURL(fileReference);
+
+        fileData = {
+
+          FileName: selectedFile.name,
+          FileType: selectedFile.type || "application/octet-stream",
+          FilePath: uploadedFilePath,
+          FileURL: downloadURL
+
+        };
+
+      }
+
+
+      // --------------------------------------
+      // FIRESTORE SCRIPT DATA
+      // --------------------------------------
+
+      const scriptData = {
+
+        TaskID: selectedTask.id,
+        TaskName: selectedTask.Task || "Untitled Task",
+
+        ScriptName: scriptName.value.trim(),
+
+        StartDate: startDate.value,
+        EndDate: endDate.value || null,
+
+        Goal: goal.value.trim(),
+
+        Content: content,
+
+        ...fileData,
+
+        CreatedAt: new Date().toISOString()
+
+      };
+
+
+      // --------------------------------------
+      // SAVE SCRIPT DOCUMENT
+      // --------------------------------------
+
+      await addDoc(
+        getUserScriptsCollection(),
+        scriptData
+      );
+
+
+      alert("Script saved successfully!");
+
+      resetScriptForm();
+
+    } catch (error) {
+
+      console.error("Script saving error:", error);
+
+      // Remove uploaded file if Firestore saving fails
+
+      if (uploadedFilePath) {
+
+        try {
+
+          await deleteObject(
+            ref(storage, uploadedFilePath)
+          );
+
+        } catch (cleanupError) {
+
+          console.error("File cleanup error:", cleanupError);
+
+        }
+
+      }
+
+      alert("Unable to save script. Please try again.");
+
+    } finally {
+
+  saveButton.disabled = false;
+  saveButton.textContent = "Save Script";
+
+  uploadButton.disabled = !!selectedFile;
+  uploadButton.textContent = selectedFile
+    ? "File Selected"
+    : "Upload File";
+
+}
+
+  });
+
+
+  // ------------------------------------------
+  // RESET FORM
+  // ------------------------------------------
+
+  function resetScriptForm() {
+
+  scriptForm.reset();
+
+  selectedTask = null;
+  selectedFile = null;
+
+  uploadButton.disabled = false;
+  uploadButton.textContent = "Upload File";
+
+  fileNameDisplay.textContent = "";
+
+  filterInput.placeholder = "Filter by task name...";
+
+  displayScriptTasks(availableTasks);
+
+  }
+
+  // ------------------------------------------
+  // CANCEL SCRIPT
+  // ------------------------------------------
+
+  if (cancelButton) {
+
+    cancelButton.addEventListener("click", () => {
+
+      resetScriptForm();
+
+      if (writingBox) {
+        writingBox.classList.remove("active");
+      }
+
+    });
+
+  }
+
+
+  // ------------------------------------------
+  // CREATE NEW SCRIPT
+  // ------------------------------------------
+
+  if (addScriptButton) {
+
+    addScriptButton.addEventListener("click", () => {
+
+      resetScriptForm();
+
+      if (writingBox) {
+        writingBox.classList.add("active");
+      }
+
+    });
+
+  }
+
+
+  // ------------------------------------------
+  // AUTHENTICATION
+  // ------------------------------------------
+
+  onAuthStateChanged(auth, (user) => {
+
+    if (user) {
+
+      loadScriptTasks();
+
+    } else {
+
+      availableTasks = [];
+
+      d_taskList.innerHTML = "<p>Please log in to view your tasks.</p>";
+
+    }
+
+  });
+
+}
+
+
+function formatDate(dateString) {
+    if (!dateString) return "";
+
+    const [year, month, day] = dateString.split("-");
+
+    return `${day}/${month}/${year}`;
+}
+
 // ============================================
 // END OF SCRIPT
 // ============================================

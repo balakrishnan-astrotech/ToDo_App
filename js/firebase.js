@@ -7,6 +7,8 @@ import { getAuth } from
 import { getFirestore } from
 "https://www.gstatic.com/firebasejs/13.2.0/firebase-firestore.js";
 
+import { getStorage } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-storage.js";
+
 const firebaseConfig = {
     apiKey: "AIzaSyDdB3sKlyK2UbqN2fkN9GBkfKJ_V9Ea-KY",
     authDomain: "todo-app-bk2026.firebaseapp.com",
@@ -18,5 +20,6 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 
+export const storage = getStorage(app);
 export const auth = getAuth(app);
 export const db = getFirestore(app);
