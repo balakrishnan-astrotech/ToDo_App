@@ -59,7 +59,8 @@ textarea{
 textarea.vertical-only { resize: vertical; }
 
 .menu.xmark span:first-child {
-  transform: translateY(8px) rotate(45deg);  
+  transform: translateY(8px) rotate(45deg); 
+  background-color: white;
 }
 
 .menu.xmark span:nth-child(2) {
@@ -68,6 +69,7 @@ textarea.vertical-only { resize: vertical; }
 
 .menu.xmark span:last-child {
   transform: translateY(-8px) rotate(-45deg);
+  background-color: white;
 }
 
 
