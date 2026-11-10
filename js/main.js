@@ -2293,7 +2293,10 @@ uploadButton.textContent = "Uploaded";
 
       }
 
-      alert("Unable to save script. Please try again.");
+      alert(
+    "Error Code: " + error.code +
+    "\nMessage: " + error.message
+);
 
     } finally {
 
