@@ -817,7 +817,7 @@ function createTaskCard(task) {
 
     editButton.type = "button";
     editButton.textContent = "Edit";
-
+    editButton.className = "editbtn"
     editButton.addEventListener("click", () => {
 
       editTask(task.id, data);
@@ -1803,6 +1803,7 @@ addScript.addEventListener("click", ()=>{
 
 cancelScript.addEventListener("click", ()=>{
   writingBox.style.display = "none";
+  document.querySelector(".confirm-task").style.color = "#d70000"
 })
 
 
@@ -1863,6 +1864,209 @@ if (scriptForm) {
     );
 
   }
+
+
+  // ============================================
+// LOAD SAVED SCRIPTS
+// ============================================
+
+const savedScriptsContainer =
+document.getElementById("saved-scripts");
+
+async function loadSavedScripts() {
+
+if (!savedScriptsContainer) return;
+
+savedScriptsContainer.textContent = "Loading saved scripts...";
+
+try {
+
+const snapshot = await getDocs(
+  getUserScriptsCollection()
+);
+
+savedScriptsContainer.innerHTML = "";
+
+if (snapshot.empty) {
+
+  savedScriptsContainer.textContent =
+    "No saved scripts found.";
+
+  return;
+
+}
+
+const scripts = snapshot.docs.map(document => ({
+  id: document.id,
+  data: document.data()
+}));
+
+// Latest scripts first
+scripts.sort((a, b) =>
+  (b.data.CreatedAt || "").localeCompare(
+    a.data.CreatedAt || ""
+  )
+);
+
+scripts.forEach(script => {
+
+  savedScriptsContainer.appendChild(
+    createScriptCard(script)
+  );
+
+});
+
+} catch (error) {
+
+console.error("Script loading error:", error);
+
+savedScriptsContainer.textContent =
+  "Unable to load saved scripts.";
+
+}
+
+}
+
+// ============================================
+// CREATE SCRIPT CARD
+// ============================================
+
+function createScriptCard(script) {
+
+const data = script.data;
+
+const card = document.createElement("div");
+
+card.className = "task-item";
+card.dataset.scriptId = script.id;
+
+// SCRIPT TITLE
+
+const title = document.createElement("h3");
+
+title.textContent = data.ScriptName || "Untitled Script";
+
+// SCRIPT DETAILS
+
+const task = createDetail(
+"Task",
+data.TaskName || "Not specified"
+);
+
+const start = createDetail(
+"Start Date",
+formatDate(data.StartDate)
+);
+
+const end = createDetail(
+"End Date",
+data.EndDate ? formatDate(data.EndDate) : "Not specified"
+);
+
+const goal = createDetail(
+"Goal",
+data.Goal || "Not specified"
+);
+
+// SCRIPT CONTENT
+
+const contentBox = document.createElement("div");
+
+contentBox.style.display = "none";
+contentBox.style.whiteSpace = "pre-wrap";
+
+contentBox.textContent =
+data.Content || "No text content available.";
+
+// VIEW BUTTON
+
+const viewButton = document.createElement("button");
+
+viewButton.type = "button";
+viewButton.textContent = "View Script";
+
+viewButton.addEventListener("click", () => {
+
+const isVisible = contentBox.style.display !== "none";
+
+contentBox.style.display =
+  isVisible ? "none" : "block";
+
+viewButton.textContent =
+  isVisible ? "View Script" : "Hide Script";
+
+});
+
+// DELETE BUTTON
+
+const deleteButton = document.createElement("button");
+
+deleteButton.type = "button";
+deleteButton.textContent = "Delete";
+deleteButton.className = "danger-btn";
+
+deleteButton.addEventListener("click", async () => {
+
+const confirmed = confirm(
+  "Are you sure you want to delete this script?"
+);
+
+if (!confirmed) return;
+
+try {
+
+  await deleteDoc(
+    doc(
+      db,
+      "Users",
+      auth.currentUser.uid,
+      "Scripts",
+      script.id
+    )
+  );
+
+  card.remove();
+
+  if (!savedScriptsContainer.children.length) {
+
+    savedScriptsContainer.textContent =
+      "No saved scripts found.";
+
+  }
+
+} catch (error) {
+
+  console.error("Script deletion error:", error);
+
+  alert("Unable to delete script.");
+
+}
+
+});
+
+// ACTION BUTTONS
+
+const actions = document.createElement("div");
+
+actions.className = "task-actions";
+
+actions.append(viewButton, deleteButton);
+
+// ADD ELEMENTS TO CARD
+
+card.append(
+title,
+task,
+start,
+end,
+goal,
+contentBox,
+actions
+);
+
+return card;
+
+}
 
 
   // ------------------------------------------
@@ -1976,7 +2180,7 @@ if (scriptForm) {
   // ------------------------------------------
 
   d_taskList.addEventListener("click", (event) => {
-
+    
     const taskCard = event.target.closest(".task-card");
 
     if (!taskCard) return;
@@ -1988,8 +2192,10 @@ if (scriptForm) {
     );
 
     // Refresh task cards to show selection
-    filterScriptTasks();
-  filterInput.placeholder = `'${taskCard.querySelector("h3").textContent}' task is selected`;
+  filterInput.value = `${taskCard.querySelector("h3").textContent.trim()}`;
+    document.querySelector(".confirm-task").textContent = "Task is selected"
+    document.querySelector(".confirm-task").style.color = "rgb(8,215,0)";
+    filterScriptTasks()
 });
 
 
@@ -2033,7 +2239,6 @@ if (scriptForm) {
 
 
   filterInput.addEventListener("input", filterScriptTasks);
-
   filterCategory.addEventListener("change", filterScriptTasks);
 
 
@@ -2270,6 +2475,9 @@ uploadButton.textContent = "Uploaded";
       alert("Script saved successfully!");
 
       resetScriptForm();
+      
+      await loadSavedScripts();
+      writingBox.style.display = "none";
 
     } catch (error) {
 
@@ -2347,6 +2555,7 @@ uploadButton.textContent = "Uploaded";
 
       if (writingBox) {
         writingBox.classList.remove("active");
+        document.querySelector(".confirm-task").style.color = "#d70000"
       }
 
     });
@@ -2379,19 +2588,28 @@ uploadButton.textContent = "Uploaded";
 
   onAuthStateChanged(auth, (user) => {
 
-    if (user) {
+  if (user) {
 
-      loadScriptTasks();
+    loadScriptTasks();
+    loadSavedScripts();
 
-    } else {
+  } else {
 
-      availableTasks = [];
+    availableTasks = [];
 
-      d_taskList.innerHTML = "<p>Please log in to view your tasks.</p>";
+    d_taskList.innerHTML =
+      "<p>Please log in to view your tasks.</p>";
+
+    if (savedScriptsContainer) {
+
+      savedScriptsContainer.textContent =
+        "Please log in to view your scripts.";
 
     }
 
-  });
+  }
+
+});
 
 }
 

@@ -59,8 +59,7 @@ textarea{
 textarea.vertical-only { resize: vertical; }
 
 .menu.xmark span:first-child {
-  transform: translateY(8px) rotate(45deg);
-  background: hwb(0 7% 0%);
+  transform: translateY(8px) rotate(45deg);  
 }
 
 .menu.xmark span:nth-child(2) {
@@ -69,8 +68,9 @@ textarea.vertical-only { resize: vertical; }
 
 .menu.xmark span:last-child {
   transform: translateY(-8px) rotate(-45deg);
-  background: hwb(0 7% 0%);
 }
+
+
 
 /* SIDE MENU */
 
@@ -122,6 +122,16 @@ textarea.vertical-only { resize: vertical; }
 
 .menu-list ul li a:hover {
   color: hwb(56 0% 4%);
+}
+
+.menu-list #logout{
+  background-color: hwb(20 0% 0%);
+  transition: 0.3s ease-in-out;
+}
+
+.menu-list #logout:hover{
+  background-color: hwb(0 0% 0%);
+  transform: scale(0.93);
 }
 
 /* HEADER */
@@ -206,16 +216,27 @@ button {
   cursor: pointer;
   margin-top: 8px;
   font-family: inherit;
+  transition: 0.3s ease-in-out;
 }
 
-button:hover {
-  background: #6044d4;
+button:hover{
+  transform: scale(0.94);
+}
+
+.task-item .editbtn {
+  background-color: hwb(175 0% 18%);
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 1);;
+}
+
+.task-item .danger-btn {
+  background-color: hwb(0 0% 9%);
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 1);;
 }
 
 /* TASK ITEMS */
 
 .task-item {
-  padding: 15px;
+  padding: 10px;
   border: 1px solid var(--border-color);
   border-radius: 7px;
   margin-bottom: 12px;
@@ -695,7 +716,7 @@ body.custom-text-color {
   height: 40px;
 }
 
-.search-field #filter-input {
+.search-field .input-of-filter {
   width: 100%;
   height: 40px;
   padding: 5px 35px 5px 10px;
@@ -865,7 +886,6 @@ body.custom-text-color {
   position: relative;
   display: flex;
   justify-content: center;
-  align-items: stretch;
   flex-direction: column;
   gap: 30px;
   width: 100%;
@@ -888,6 +908,7 @@ body.custom-text-color {
   text-transform: uppercase;
 }
 
+.script-body #filter-input,
 .script-body input,
 .script-body textarea {
   width: 100%;
@@ -908,6 +929,16 @@ body.custom-text-color {
   text-align: center;
 }
 
+.upload-section #save-script{
+  background-color: hwb(173 0% 16%);
+  text-shadow: 0px 0px 5px black;
+  transition: 0.5s ease-in-out;
+}
+
+.upload-section #save-script:hover{
+  transform: scale(0.95);
+}
+
 .upload-section p {
   margin: 0;
   text-align: center;
@@ -916,7 +947,6 @@ body.custom-text-color {
 .task-for-script {
   padding: 5px;
   border-radius: 5px;
-  margin: 6px;
 }
 
 .task-for-script h3 {
@@ -931,10 +961,17 @@ body.custom-text-color {
   text-transform: uppercase;
 }
 
+.task-script-container{
+  width: 100%;
+}
+
+.task-script-container .tasks{
+  width: 100%;
+}
+
 .task-card {
-  padding: 5px;
   background-color: hwb(212 93% 0% / 0.8196078431372549);
-  margin: 5px;
+  margin: 8px 0px;
   border-radius: 6px;
 }
 
@@ -942,6 +979,18 @@ body.custom-text-color {
   background-color: hwb(164 0% 7%);
   border: 2px solid var(--amber);
   box-shadow: 0 0 8px rgba(51, 255, 82, 0.35294117647058826);
+}
+
+.script-task-selection{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.script-task-selection .confirm-task{
+  color: red;
+  text-shadow: 1px 1px 1px rgba(0,0,0, 0.01);
+  font-weight: 700;
 }
 
 

@@ -61,11 +61,14 @@
                 <div>
                   <label for="task-name">For what task?<sup style="color: red; font-weight: 400;">*</sup></label>
                   <input id="filter-input" type="text" placeholder="Filter by task name...">
-                  <select id="filter-category">
+                  <div class="script-task-selection">
+                    <select id="filter-category">
                     <option value="task">Task</option>
                     <option value="priority">Priority</option>
                     <option value="date">Date</option>
-                  </select>
+                    </select>
+                    <small class="confirm-task">No task is selected</small>
+                  </div>
 
                   <div class="task-choice-container">
                     <div class="tasks">
@@ -97,22 +100,19 @@
                 </div>
 
                 <div class="upload-section">
-                  <p>Or</p>
-                  <p>Upload a txt/docx/pdf file instead that you already have</p>
+              
+                  <p style="display: none;">Or</p>
+                  <p style="display: none;">Upload a txt/docx/pdf file instead that you already have</p>
 
-                  <button type="button" id="txtbtn">Upload File</button>
+                  <button style="display: none;" type="button" id="txtbtn">Upload File</button>
 
-<input
-    type="file"
-    id="script-file"
-    accept=".txt,.docx,.pdf"
-    hidden
->
+                  <input style="display: none;" type="file" id="script-file" accept=".txt,.docx,.pdf" hidden>
 
-<small id="file-name"></small>
+                  <small style="display: none;" id="file-name"></small>
 
-                  <button type="submit" id="save-script"
-                    style="background-color: hwb(173 0% 16%); text-shadow: 0px 0px 5px black;">
+                  
+                  
+                  <button type="submit" id="save-script">
                     Save Script
                   </button>
                 </div>
@@ -121,6 +121,10 @@
           </div>
         </div>
       </div>
+    </div>
+
+    <div id="saved-scripts">
+  <p>Loading saved scripts...</p>
     </div>
 
     <div id="add-script" class="new-script" title="Write new script for a task">
